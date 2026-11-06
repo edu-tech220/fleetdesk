@@ -132,8 +132,8 @@ Requires the .NET 8 SDK and a reachable SQL Server (e.g. `docker compose up sqls
 # Backend -> http://localhost:5181  (Swagger UI at /swagger)
 dotnet run --project src/FleetDesk.Api
 
-# Frontend -> http://localhost:5217  (in another terminal, pointing it at the local API)
-Api__BaseUrl=http://localhost:5181 dotnet run --project src/FleetDesk.Web
+# Frontend -> http://localhost:5217  (in another terminal; it already points at the local API)
+dotnet run --project src/FleetDesk.Web
 ```
 
 The connection string lives in `ConnectionStrings:DefaultConnection` (`src/FleetDesk.Api/appsettings.json`)
