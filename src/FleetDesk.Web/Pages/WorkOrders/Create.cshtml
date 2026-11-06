@@ -1,0 +1,41 @@
+@page
+@model FleetDesk.Web.Pages.WorkOrders.CreateModel
+@{
+    ViewData["Title"] = "Nueva orden de trabajo";
+}
+
+<h1 class="h3 mb-3">Nueva orden de trabajo</h1>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form method="post" class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Input.VehicleId" class="form-label">Vehiculo</label>
+        <select asp-for="Input.VehicleId" asp-items="Model.AvailableVehicles" class="form-select">
+            <option value="">-- Selecciona --</option>
+        </select>
+        <span asp-validation-for="Input.VehicleId" class="text-danger"></span>
+        @if (!Model.AvailableVehicles.Any())
+        {
+            <div class="form-text text-warning">No hay vehiculos disponibles (todos estan en taller o retirados).</div>
+        }
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Input.Description" class="form-label">Descripcion del trabajo</label>
+        <textarea asp-for="Input.Description" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Input.Description" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Crear orden</button>
+        <a asp-page="/WorkOrders/Index" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

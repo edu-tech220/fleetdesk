@@ -1,0 +1,73 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Panel";
+}
+
+<h1 class="h3 mb-4">Panel de mantenimiento</h1>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+else
+{
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card text-bg-light">
+                <div class="card-body">
+                    <h2 class="display-6">@Model.TotalVehicles</h2>
+                    <p class="card-text">Vehiculos en la flota</p>
+                    <a asp-page="/Vehicles/Index" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card @(Model.OverdueVehicles > 0 ? "text-bg-warning" : "text-bg-light")">
+                <div class="card-body">
+                    <h2 class="display-6">@Model.OverdueVehicles</h2>
+                    <p class="card-text">Vehiculos con mantenimiento vencido</p>
+                    <a asp-page="/Reports/Overdue" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-light">
+                <div class="card-body">
+                    <h2 class="display-6">@Model.TotalParts</h2>
+                    <p class="card-text">Refacciones en catalogo</p>
+                    <a asp-page="/Parts/Index" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-secondary">
+                <div class="card-body">
+                    <h2 class="display-6">@Model.PendingOrders</h2>
+                    <p class="card-text">Ordenes pendientes de iniciar</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-primary">
+                <div class="card-body">
+                    <h2 class="display-6">@Model.InProgressOrders</h2>
+                    <p class="card-text">Ordenes en progreso</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card @(Model.WaitingPartsOrders > 0 ? "text-bg-danger" : "text-bg-light")">
+                <div class="card-body">
+                    <h2 class="display-6">@Model.WaitingPartsOrders</h2>
+                    <p class="card-text">Ordenes esperando refacciones</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-page="/WorkOrders/Create" class="btn btn-primary">Nueva orden de trabajo</a>
+        <a asp-page="/WorkOrders/Index" class="btn btn-outline-secondary">Ver todas las ordenes</a>
+    </div>
+}

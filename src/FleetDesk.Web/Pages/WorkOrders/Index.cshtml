@@ -1,0 +1,77 @@
+@page
+@using FleetDesk.Web.Models
+@model FleetDesk.Web.Pages.WorkOrders.IndexModel
+@{
+    ViewData["Title"] = "Ordenes de trabajo";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">Ordenes de trabajo</h1>
+    @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Mechanic))
+    {
+        <a asp-page="/WorkOrders/Create" class="btn btn-primary">Nueva orden</a>
+    }
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select asp-for="Status" asp-items="Html.GetEnumSelectList<WorkOrderStatus>()" class="form-select" onchange="this.form.submit()">
+            <option value="">Todos los estados</option>
+        </select>
+    </div>
+</form>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Vehiculo</th>
+                <th>Mecanico</th>
+                <th>Estado</th>
+                <th>Abierta</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.WorkOrders.Items)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.PlateNumber</td>
+                    <td>@order.MechanicUsername</td>
+                    <td>
+                        <span class="badge bg-@(order.Status switch
+                                                 {
+                                                     WorkOrderStatus.Pending => "secondary",
+                                                     WorkOrderStatus.InProgress => "primary",
+                                                     WorkOrderStatus.WaitingParts => "danger",
+                                                     WorkOrderStatus.Completed => "success",
+                                                     _ => "dark"
+                                                 })">
+                            @order.Status
+                        </span>
+                    </td>
+                    <td>@order.OpenedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td><a asp-page="/WorkOrders/Details" asp-route-id="@order.Id">Ver</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination">
+            @for (var p = 1; p <= Math.Ceiling(Model.WorkOrders.TotalCount / (double)Model.WorkOrders.PageSize); p++)
+            {
+                <li class="page-item @(p == Model.WorkOrders.Page ? "active" : "")">
+                    <a class="page-link" asp-page="/WorkOrders/Index" asp-route-page="@p" asp-route-status="@Model.Status">@p</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

@@ -1,0 +1,79 @@
+@using FleetDesk.Web.Models
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FleetDesk</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">FleetDesk</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-page="/Index">Panel</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-page="/Vehicles/Index">Vehiculos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-page="/WorkOrders/Index">Ordenes de trabajo</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-page="/Parts/Index">Refacciones</a>
+                            </li>
+                            @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.FleetManager))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-page="/Reports/Overdue">Vencidos</a>
+                                </li>
+                            }
+                        </ul>
+                        <div class="d-flex align-items-center">
+                            <span class="text-light small me-3">@User.Identity!.Name (@(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value))</span>
+                            <form method="post" asp-page="/Logout">
+                                <button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        @if (!string.IsNullOrEmpty(TempData["StatusMessage"] as string))
+        {
+            <div class="alert alert-success">@TempData["StatusMessage"]</div>
+        }
+        @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
+        {
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        }
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - FleetDesk - gestion de mantenimiento de flota vehicular
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

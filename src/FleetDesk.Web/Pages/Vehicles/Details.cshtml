@@ -1,0 +1,48 @@
+@page "{id:int}"
+@using FleetDesk.Web.Models
+@model FleetDesk.Web.Pages.Vehicles.DetailsModel
+@{
+    ViewData["Title"] = "Detalle de vehiculo";
+}
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+else if (Model.Vehicle is not null)
+{
+    var vehicle = Model.Vehicle;
+    <h1 class="h3 mb-3">@vehicle.PlateNumber &mdash; @vehicle.Brand @vehicle.Model</h1>
+
+    <dl class="row">
+        <dt class="col-sm-3">Anio</dt>
+        <dd class="col-sm-9">@vehicle.Year</dd>
+
+        <dt class="col-sm-3">Odometro</dt>
+        <dd class="col-sm-9">@vehicle.Odometer.ToString("N0") km</dd>
+
+        <dt class="col-sm-3">Estado</dt>
+        <dd class="col-sm-9">
+            @vehicle.Status
+            @if (vehicle.IsOverdue)
+            {
+                <span class="badge bg-warning text-dark">Mantenimiento vencido</span>
+            }
+        </dd>
+
+        <dt class="col-sm-3">Plan de mantenimiento</dt>
+        <dd class="col-sm-9">cada @vehicle.IntervalKm.ToString("N0") km o @vehicle.IntervalMonths meses</dd>
+
+        <dt class="col-sm-3">Ultimo servicio</dt>
+        <dd class="col-sm-9">
+            @(vehicle.LastServiceOdometer?.ToString("N0") ?? "N/A") km
+            @(vehicle.LastServiceDate?.ToString("yyyy-MM-dd") ?? "(sin registro)")
+        </dd>
+    </dl>
+
+    @if (vehicle.Status == VehicleStatus.Active && (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Mechanic)))
+    {
+        <a asp-page="/WorkOrders/Create" asp-route-vehicleId="@vehicle.Id" class="btn btn-primary">Abrir orden de trabajo</a>
+    }
+    <a asp-page="/Vehicles/Index" class="btn btn-outline-secondary">Volver</a>
+}

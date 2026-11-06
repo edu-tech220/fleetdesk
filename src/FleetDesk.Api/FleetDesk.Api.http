@@ -1,0 +1,19 @@
+@FleetDesk.Api_HostAddress = http://localhost:5181
+
+### Login
+# @name login
+POST {{FleetDesk.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin123!"
+}
+
+### Listar vehiculos (requiere el token devuelto por el login)
+GET {{FleetDesk.Api_HostAddress}}/api/vehicles?page=1&pageSize=10
+Authorization: Bearer {{login.response.body.token}}
+
+### Vehiculos con mantenimiento vencido
+GET {{FleetDesk.Api_HostAddress}}/api/reports/overdue-vehicles
+Authorization: Bearer {{login.response.body.token}}

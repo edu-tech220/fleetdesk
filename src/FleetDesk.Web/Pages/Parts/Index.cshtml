@@ -1,0 +1,90 @@
+@page
+@using FleetDesk.Web.Models
+@model FleetDesk.Web.Pages.Parts.IndexModel
+@{
+    ViewData["Title"] = "Refacciones";
+}
+
+<h1 class="h3 mb-3">Refacciones</h1>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Nombre</th>
+                <th>Existencia</th>
+                <th>Costo unitario</th>
+                @if (User.IsInRole(Roles.Admin))
+                {
+                    <th>Reabastecer</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var part in Model.Parts.Items)
+            {
+                <tr class="@(part.StockQuantity == 0 ? "table-danger" : "")">
+                    <td>@part.Sku</td>
+                    <td>@part.Name</td>
+                    <td>@part.StockQuantity</td>
+                    <td>@part.UnitCost.ToString("C2")</td>
+                    @if (User.IsInRole(Roles.Admin))
+                    {
+                        <td>
+                            <form method="post" asp-page-handler="Restock" class="d-flex gap-1">
+                                <input type="hidden" name="Restock.PartId" value="@part.Id" />
+                                <input type="hidden" name="Restock.RowVersion" value="@part.RowVersion" />
+                                <input type="number" min="1" name="Restock.Quantity" class="form-control form-control-sm" style="width:6rem" placeholder="Cant." required />
+                                <button type="submit" class="btn btn-sm btn-outline-primary">+</button>
+                            </form>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination">
+            @for (var p = 1; p <= Math.Ceiling(Model.Parts.TotalCount / (double)Model.Parts.PageSize); p++)
+            {
+                <li class="page-item @(p == Model.Parts.Page ? "active" : "")">
+                    <a class="page-link" asp-page="/Parts/Index" asp-route-page="@p">@p</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+@if (User.IsInRole(Roles.Admin))
+{
+    <hr />
+    <h2 class="h5">Agregar refaccion</h2>
+    <form method="post" asp-page-handler="Create" class="row g-2">
+        <div class="col-md-2">
+            <label class="form-label">SKU</label>
+            <input asp-for="NewPart.Sku" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Nombre</label>
+            <input asp-for="NewPart.Name" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Existencia inicial</label>
+            <input asp-for="NewPart.StockQuantity" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Costo unitario</label>
+            <input asp-for="NewPart.UnitCost" class="form-control" />
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Agregar</button>
+        </div>
+    </form>
+}

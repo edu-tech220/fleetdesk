@@ -1,0 +1,60 @@
+@page
+@model FleetDesk.Web.Pages.Vehicles.CreateModel
+@{
+    ViewData["Title"] = "Agregar vehiculo";
+}
+
+<h1 class="h3 mb-3">Agregar vehiculo</h1>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form method="post" class="row g-3">
+    <div class="col-md-3">
+        <label asp-for="Input.PlateNumber" class="form-label">Placas</label>
+        <input asp-for="Input.PlateNumber" class="form-control" />
+        <span asp-validation-for="Input.PlateNumber" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Input.Brand" class="form-label">Marca</label>
+        <input asp-for="Input.Brand" class="form-control" />
+        <span asp-validation-for="Input.Brand" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Input.Model" class="form-label">Modelo</label>
+        <input asp-for="Input.Model" class="form-control" />
+        <span asp-validation-for="Input.Model" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Input.Year" class="form-label">Anio</label>
+        <input asp-for="Input.Year" class="form-control" />
+        <span asp-validation-for="Input.Year" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Input.Odometer" class="form-label">Odometro actual (km)</label>
+        <input asp-for="Input.Odometer" class="form-control" />
+        <span asp-validation-for="Input.Odometer" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Input.IntervalKm" class="form-label">Intervalo de mantenimiento (km)</label>
+        <input asp-for="Input.IntervalKm" class="form-control" />
+        <span asp-validation-for="Input.IntervalKm" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Input.IntervalMonths" class="form-label">Intervalo de mantenimiento (meses)</label>
+        <input asp-for="Input.IntervalMonths" class="form-control" />
+        <span asp-validation-for="Input.IntervalMonths" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a asp-page="/Vehicles/Index" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

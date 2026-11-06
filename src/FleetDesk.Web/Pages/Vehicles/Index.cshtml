@@ -1,0 +1,78 @@
+@page
+@using FleetDesk.Web.Models
+@model FleetDesk.Web.Pages.Vehicles.IndexModel
+@{
+    ViewData["Title"] = "Vehiculos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">Vehiculos</h1>
+    @if (User.IsInRole(Roles.Admin))
+    {
+        <a asp-page="/Vehicles/Create" class="btn btn-primary">Agregar vehiculo</a>
+    }
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto form-check mt-2">
+        <input class="form-check-input" type="checkbox" asp-for="OverdueOnly" id="overdueOnly" onchange="this.form.submit()" />
+        <label class="form-check-label" for="overdueOnly">Solo vencidos</label>
+    </div>
+</form>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Placas</th>
+                <th>Marca / Modelo</th>
+                <th>Odometro</th>
+                <th>Estado</th>
+                <th>Proximo mantenimiento</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vehicle in Model.Vehicles.Items)
+            {
+                <tr class="@(vehicle.IsOverdue ? "table-warning" : "")">
+                    <td>@vehicle.PlateNumber</td>
+                    <td>@vehicle.Brand @vehicle.Model (@vehicle.Year)</td>
+                    <td>@vehicle.Odometer.ToString("N0") km</td>
+                    <td>
+                        <span class="badge bg-@(vehicle.Status switch
+                                                 {
+                                                     VehicleStatus.Active => "success",
+                                                     VehicleStatus.InShop => "secondary",
+                                                     _ => "dark"
+                                                 })">
+                            @vehicle.Status
+                        </span>
+                        @if (vehicle.IsOverdue)
+                        {
+                            <span class="badge bg-warning text-dark">Vencido</span>
+                        }
+                    </td>
+                    <td>cada @vehicle.IntervalKm.ToString("N0") km / @vehicle.IntervalMonths meses</td>
+                    <td><a asp-page="/Vehicles/Details" asp-route-id="@vehicle.Id">Ver</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination">
+            @for (var p = 1; p <= Math.Ceiling(Model.Vehicles.TotalCount / (double)Model.Vehicles.PageSize); p++)
+            {
+                <li class="page-item @(p == Model.Vehicles.Page ? "active" : "")">
+                    <a class="page-link" asp-page="/Vehicles/Index" asp-route-page="@p" asp-route-overdueOnly="@Model.OverdueOnly">@p</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

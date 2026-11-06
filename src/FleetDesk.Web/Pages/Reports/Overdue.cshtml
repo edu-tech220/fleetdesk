@@ -1,0 +1,47 @@
+@page
+@model FleetDesk.Web.Pages.Reports.OverdueModel
+@{
+    ViewData["Title"] = "Vehiculos con mantenimiento vencido";
+}
+
+<h1 class="h3 mb-3">Vehiculos con mantenimiento vencido</h1>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+else if (!Model.Vehicles.Items.Any())
+{
+    <div class="alert alert-success">No hay vehiculos con mantenimiento vencido.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Placas</th>
+                <th>Marca / Modelo</th>
+                <th>Odometro</th>
+                <th>Ultimo servicio</th>
+                <th>Plan</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vehicle in Model.Vehicles.Items)
+            {
+                <tr class="table-warning">
+                    <td>@vehicle.PlateNumber</td>
+                    <td>@vehicle.Brand @vehicle.Model</td>
+                    <td>@vehicle.Odometer.ToString("N0") km</td>
+                    <td>
+                        @(vehicle.LastServiceOdometer?.ToString("N0") ?? "N/A") km /
+                        @(vehicle.LastServiceDate?.ToString("yyyy-MM-dd") ?? "sin registro")
+                    </td>
+                    <td>cada @vehicle.IntervalKm.ToString("N0") km / @vehicle.IntervalMonths meses</td>
+                    <td><a asp-page="/Vehicles/Details" asp-route-id="@vehicle.Id">Ver</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

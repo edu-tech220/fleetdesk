@@ -1,0 +1,42 @@
+@page
+@model FleetDesk.Web.Pages.LoginModel
+@{
+    ViewData["Title"] = "Iniciar sesion";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h4 mb-3">FleetDesk</h1>
+                <p class="text-muted">Gestion de mantenimiento de flota vehicular</p>
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="Input.Username" class="form-label">Usuario</label>
+                        <input asp-for="Input.Username" class="form-control" autocomplete="username" />
+                        <span asp-validation-for="Input.Username" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Password" class="form-label">Contrasena</label>
+                        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                </form>
+
+                <hr />
+                <p class="small text-muted mb-0">
+                    Usuarios de prueba: <code>admin / Admin123!</code>, <code>mecanico1 / Mecanico123!</code>,
+                    <code>gerente / Gerente123!</code>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

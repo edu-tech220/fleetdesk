@@ -1,0 +1,11 @@
+@page
+@model FleetDesk.Web.Pages.AccessDeniedModel
+@{
+    ViewData["Title"] = "Acceso denegado";
+}
+
+<div class="alert alert-danger">
+    <h1 class="h4">Acceso denegado</h1>
+    <p>Tu rol no tiene permiso para ver esta pagina.</p>
+    <a asp-page="/Index" class="btn btn-secondary">Volver al inicio</a>
+</div>

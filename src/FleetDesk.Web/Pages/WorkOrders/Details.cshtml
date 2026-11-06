@@ -1,0 +1,122 @@
+@page "{id:int}"
+@using FleetDesk.Web.Models
+@model FleetDesk.Web.Pages.WorkOrders.DetailsModel
+@{
+    ViewData["Title"] = "Detalle de orden";
+}
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+else if (Model.WorkOrder is not null)
+{
+    var order = Model.WorkOrder;
+    <h1 class="h3 mb-3">Orden #@order.Id &mdash; @order.PlateNumber</h1>
+
+    <dl class="row">
+        <dt class="col-sm-3">Estado</dt>
+        <dd class="col-sm-9">
+            <span class="badge bg-@(order.Status switch
+                                     {
+                                         WorkOrderStatus.Pending => "secondary",
+                                         WorkOrderStatus.InProgress => "primary",
+                                         WorkOrderStatus.WaitingParts => "danger",
+                                         WorkOrderStatus.Completed => "success",
+                                         _ => "dark"
+                                     })">
+                @order.Status
+            </span>
+        </dd>
+
+        <dt class="col-sm-3">Mecanico asignado</dt>
+        <dd class="col-sm-9">@order.MechanicUsername</dd>
+
+        <dt class="col-sm-3">Descripcion</dt>
+        <dd class="col-sm-9">@order.Description</dd>
+
+        <dt class="col-sm-3">Odometro de apertura</dt>
+        <dd class="col-sm-9">@order.OdometerAtOpen.ToString("N0") km</dd>
+
+        <dt class="col-sm-3">Abierta</dt>
+        <dd class="col-sm-9">@order.OpenedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+
+        @if (order.ClosedAt is not null)
+        {
+            <dt class="col-sm-3">Cerrada</dt>
+            <dd class="col-sm-9">@order.ClosedAt.Value.ToString("yyyy-MM-dd HH:mm") (@order.ClosingOdometer?.ToString("N0") km)</dd>
+        }
+    </dl>
+
+    <h2 class="h5">Refacciones utilizadas</h2>
+    @if (order.Parts.Any())
+    {
+        <table class="table table-sm">
+            <thead><tr><th>Refaccion</th><th>Cantidad</th><th>Costo unitario</th></tr></thead>
+            <tbody>
+                @foreach (var part in order.Parts)
+                {
+                    <tr>
+                        <td>@part.PartName</td>
+                        <td>@part.Quantity</td>
+                        <td>@part.UnitCostAtUse.ToString("C2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">Sin refacciones registradas.</p>
+    }
+
+    @if (Model.CanManage)
+    {
+        <hr />
+        <div class="row g-4">
+            @if (order.Status == WorkOrderStatus.Pending)
+            {
+                <div class="col-md-4">
+                    <form method="post" asp-page-handler="Start">
+                        <button type="submit" class="btn btn-primary">Iniciar orden</button>
+                    </form>
+                </div>
+            }
+
+            @if (order.Status is WorkOrderStatus.InProgress or WorkOrderStatus.WaitingParts)
+            {
+                <div class="col-md-6">
+                    <h2 class="h6">Agregar refaccion</h2>
+                    <form method="post" asp-page-handler="AddPart" class="d-flex gap-2">
+                        <select asp-for="NewPart.PartId" asp-items="Model.AvailableParts" class="form-select">
+                            <option value="">-- Refaccion --</option>
+                        </select>
+                        <input asp-for="NewPart.Quantity" class="form-control" style="width:6rem" />
+                        <button type="submit" class="btn btn-outline-primary">Agregar</button>
+                    </form>
+                </div>
+
+                <div class="col-md-6">
+                    <h2 class="h6">Completar orden</h2>
+                    <form method="post" asp-page-handler="Complete" class="d-flex gap-2">
+                        <input asp-for="Complete.ClosingOdometer" class="form-control" />
+                        <button type="submit" class="btn btn-success">Completar</button>
+                    </form>
+                </div>
+            }
+
+            @if (order.Status is WorkOrderStatus.Pending or WorkOrderStatus.InProgress or WorkOrderStatus.WaitingParts)
+            {
+                <div class="col-md-4">
+                    <form method="post" asp-page-handler="Cancel">
+                        <button type="submit" class="btn btn-outline-danger">Cancelar orden</button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-page="/WorkOrders/Index" class="btn btn-outline-secondary">Volver</a>
+    </div>
+}
